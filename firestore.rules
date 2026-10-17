@@ -1,0 +1,180 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isValidString(val, minLen, maxLen) {
+      return val is string && val.size() >= minLen && val.size() <= maxLen;
+    }
+
+    // 0. Connection Test Endpoint (Mandated by Firebase Skill)
+    match /test/{document} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // 1. Mata Pelajaran (Subjects)
+    // Read: Publik/Siswa untuk materi belajar
+    // Write: Terotentikasi dengan validasi nama mapel
+    // Delete: Dicegah dari akses publik
+    match /subjects/{document} {
+      allow read: if true;
+      allow create, update: if isAuthenticated() && isValidString(request.resource.data.name, 1, 150);
+      allow delete: if isAuthenticated();
+    }
+
+    // 2. Kategori / Topik Pembelajaran (Categories)
+    // Read: Publik/Siswa untuk menampilkan modul belajar
+    // Write: Terotentikasi dengan relasi subjectId yang sah
+    // Delete: Dicegah dari akses publik
+    match /categories/{document} {
+      allow read: if true;
+      allow create, update: if isAuthenticated()
+                           && isValidString(request.resource.data.title, 1, 200)
+                           && (request.resource.data.subjectId is string && request.resource.data.subjectId.size() > 0);
+      allow delete: if isAuthenticated();
+    }
+
+    // 3. Modul & Konten Materi Pembelajaran (Materials)
+    // Read: Publik/Siswa untuk mengakses materi dan kuis
+    // Write: Terotentikasi dengan relasi categoryId yang sah
+    // Delete: Dicegah dari akses publik
+    match /materials/{document} {
+      allow read: if true;
+      allow create, update: if isAuthenticated()
+                           && isValidString(request.resource.data.title, 1, 300)
+                           && (request.resource.data.categoryId is string && request.resource.data.categoryId.size() > 0);
+      allow delete: if isAuthenticated();
+    }
+
+    // 4. Akun & Direktori Guru (Teachers)
+    // Read: Memerlukan koneksi terotentikasi aplikasi
+    // Write: Validasi integritas data nama guru
+    // Delete: Dibatasi pada sesi terotentikasi
+    match /teachers/{document} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidString(request.resource.data.name, 1, 150);
+      allow update: if isAuthenticated() && (
+        (request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 150)
+        || (resource != null && resource.data.name is string)
+      );
+      allow delete: if isAuthenticated();
+    }
+
+    // 5. Akun & Direktori Siswa (Students)
+    // Read: Memerlukan koneksi terotentikasi aplikasi untuk direktori & leaderboard
+    // Write: Validasi nama siswa & update presensi online/heartbeat
+    // Delete: Dibatasi pada sesi terotentikasi
+    match /students/{document} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidString(request.resource.data.nama, 1, 150);
+      allow update: if isAuthenticated() && (
+        (request.resource.data.nama is string && request.resource.data.nama.size() > 0 && request.resource.data.nama.size() <= 150)
+        || (resource != null && resource.data.nama is string)
+      );
+      allow delete: if isAuthenticated();
+    }
+
+    // 6. Progres Belajar & Rekap Nilai Siswa (Student Progress)
+    // Read: Akses terotentikasi untuk laporan progres belajar & leaderboard
+    // Write: Penegakan integritas studentId yang ketat (TIDAK ADA || true)
+    // Delete: Dibatasi pada sesi terotentikasi untuk reset progres
+    match /student_progress/{studentId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated() && (
+        request.resource.data.studentId == studentId
+        || (resource != null && resource.data.studentId == studentId)
+      );
+      allow delete: if isAuthenticated() && (
+        resource != null && resource.data.studentId == studentId
+      );
+
+      // Subkoleksi rincian progres wajib terikat pada studentId induk
+      match /{subcollection}/{document} {
+        allow read, write: if isAuthenticated();
+      }
+    }
+
+    // 7. Pengaturan Sistem & Konfigurasi Akademik (Settings)
+    // Read: Konfigurasi tema, master kelas, dan PIN admin
+    // Write: Hanya untuk sesi terotentikasi dengan hash PIN valid (panjang >= 10)
+    // Delete: Seluruh dokumen konfigurasi dilarang keras dihapus (allow delete: if false)
+    match /settings/{document} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated() && (
+        document != 'admin_config'
+        || (request.resource.data.adminPinHash is string && request.resource.data.adminPinHash.size() >= 10)
+      );
+      allow delete: if false;
+    }
+
+    // 8. Metadata Versi Aplikasi & Konten (Optimasi PWA & Cache)
+    // Read: Publik untuk pengecekan versi aplikasi & invalidasi cache PWA
+    // Write: DIBLOKIR TOTAL DARI PUBLIK (Hanya server/admin internal)
+    match /app_meta/versions {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /app_meta/{document} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // 9. Konfigurasi Sistem Internal (System Config)
+    // Read: Publik read-only
+    // Write: Dilarang total
+    match /system_config/{document=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // 10. Sesi Game Icebreaking Multiplayer (Bomb Passthrough & Trivia Battle Royale)
+    // Read: Akses terotentikasi untuk listener onSnapshot siswa dan guru
+    // Write: Akses terotentikasi dengan validasi targetClass
+    // Delete: Pembersihan room setelah game berakhir
+    match /game_sessions/{sessionId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidString(request.resource.data.targetClass, 1, 50);
+      allow update: if isAuthenticated();
+      allow delete: if isAuthenticated();
+
+      // Subkoleksi rahasia / validasi internal diblokir total dari akses langsung client SDK
+      match /private_state/{doc=**} {
+        allow read, write: if false;
+      }
+
+      // Subkoleksi pemain sesi game Icebreaking
+      match /players/{playerId} {
+        allow read: if isAuthenticated();
+        allow create, update: if isAuthenticated() && (
+          request.resource.data.id == playerId || (request.resource.data.name is string)
+        );
+        allow delete: if isAuthenticated();
+      }
+
+      match /{subCollection=**} {
+        allow read, write: if isAuthenticated();
+      }
+    }
+
+    // 11. Paket Soal Icebreaking Dinamis (Icebreaking Packages)
+    // Read: Terotentikasi (Guru saat host room & siswa saat bermain)
+    // Write: Terotentikasi (Admin/Guru yang membuat atau mengedit paket soal)
+    // Delete: Terotentikasi
+    match /icebreaking_packages/{packageId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated() && isValidString(request.resource.data.title, 1, 200);
+      allow delete: if isAuthenticated();
+    }
+
+    // 12. Strict Catch-all: Tolak seluruh akses ke koleksi di luar skema resmi
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

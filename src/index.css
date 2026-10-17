@@ -1,0 +1,153 @@
+@import "tailwindcss";
+
+html, body, #root {
+  min-height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: #f8fafc;
+  color: #0f172a;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+  -webkit-tap-highlight-color: transparent;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Heading font helper */
+h1, h2, h3, .font-heading {
+  font-family: 'Lexend', 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Background grid pattern */
+.bg-grid-pattern {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(99, 102, 241, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(99, 102, 241, 0.04) 1px, transparent 1px);
+}
+
+/* Floating animation for decorative educational ornaments */
+@keyframes float-slow {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(4deg);
+  }
+}
+
+@keyframes float-reverse {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(10px) rotate(-4deg);
+  }
+}
+
+.animate-float {
+  animation: float-slow 6s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float-reverse 7s ease-in-out infinite 1s;
+}
+
+/* Glass panel effect */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.admin-trigger {
+  opacity: 0.15;
+  transition: opacity 0.3s ease;
+}
+
+.admin-trigger:hover {
+  opacity: 1;
+}
+
+/* Clean floating overlay scrollbar styling without right gap */
+html {
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(199, 210, 254, 0.8) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(199, 210, 254, 0.8);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(129, 140, 248, 0.9);
+}
+
+/* Hide scrollbar helper */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Screen shake keyframes for bomb explosion */
+@keyframes screen-shake-intense {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  10% { transform: translate(-8px, -6px) rotate(-1.5deg); }
+  20% { transform: translate(7px, 6px) rotate(1.5deg); }
+  30% { transform: translate(-6px, 5px) rotate(-1deg); }
+  40% { transform: translate(6px, -5px) rotate(1deg); }
+  50% { transform: translate(-4px, 4px) rotate(-0.5deg); }
+  60% { transform: translate(4px, -3px) rotate(0.5deg); }
+  70% { transform: translate(-2px, 2px) rotate(0deg); }
+  80% { transform: translate(2px, -1px) rotate(0deg); }
+  90% { transform: translate(-1px, 1px) rotate(0deg); }
+}
+
+.animate-screen-shake {
+  animation: screen-shake-intense 0.7s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes explosion-flash {
+  0% { opacity: 0.95; }
+  50% { opacity: 0.8; }
+  100% { opacity: 0; }
+}
+
+.animate-explosion-flash {
+  animation: explosion-flash 0.6s ease-out forwards;
+}
+
+

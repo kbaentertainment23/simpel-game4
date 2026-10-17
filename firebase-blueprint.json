@@ -1,0 +1,257 @@
+{
+  "entities": {
+    "subject": {
+      "title": "Subject",
+      "description": "Mata pelajaran dalam sistem pembelajaran",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "code": { "type": "string" },
+        "description": { "type": "string" },
+        "icon": { "type": "string" },
+        "order": { "type": "number" },
+        "targetGrades": { "type": "array" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["name", "order"]
+    },
+    "category": {
+      "title": "Category",
+      "description": "Topik atau bab materi dalam mata pelajaran",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "subjectId": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "icon": { "type": "string" },
+        "order": { "type": "number" },
+        "prerequisiteCategoryId": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["title", "order"]
+    },
+    "material": {
+      "title": "Material",
+      "description": "Modul ajar digital, slide presentasi, dokumen, atau formulir evaluasi",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "categoryId": { "type": "string" },
+        "title": { "type": "string" },
+        "type": { "type": "string" },
+        "originalUrl": { "type": "string" },
+        "embedUrl": { "type": "string" },
+        "order": { "type": "number" },
+        "description": { "type": "string" },
+        "learningObjectives": { "type": "string" },
+        "isPublished": { "type": "boolean" },
+        "reflectionQuestions": { "type": "array" },
+        "quizQuestions": { "type": "array" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["categoryId", "title", "order"]
+    },
+    "teacher": {
+      "title": "TeacherAccount",
+      "description": "Akun guru pengampu",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "username": { "type": "string" },
+        "nip": { "type": "string" },
+        "role": { "type": "string" },
+        "assignedSubjectIds": { "type": "array" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["name", "username"]
+    },
+    "student": {
+      "title": "StudentAccount",
+      "description": "Data akun siswa",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "nama": { "type": "string" },
+        "nisn": { "type": "string" },
+        "kelas": { "type": "string" },
+        "username": { "type": "string" },
+        "password": { "type": "string" },
+        "isOnline": { "type": "boolean" },
+        "activeSubjectId": { "type": "string" },
+        "activeSubjectName": { "type": "string" },
+        "totalOnlineMinutes": { "type": "number" },
+        "totalOnlineSeconds": { "type": "number" },
+        "subjectOnlineSeconds": { "type": "object" },
+        "subjectOnlineMinutes": { "type": "object" },
+        "lastActive": { "type": "string" },
+        "lastLogin": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["nama", "nisn", "kelas"]
+    },
+    "studentProgress": {
+      "title": "StudentProgress",
+      "description": "Rekapitulasi pencapaian dan aktivitas siswa",
+      "type": "object",
+      "properties": {
+        "studentId": { "type": "string" },
+        "completedMaterialIds": { "type": "array" },
+        "progressPercent": { "type": "number" },
+        "completedCount": { "type": "number" },
+        "totalMaterialsCount": { "type": "number" },
+        "quizScores": { "type": "object" },
+        "activityLogs": { "type": "array" },
+        "lastActiveAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["studentId"]
+    },
+    "setting": {
+      "title": "SystemSetting",
+      "description": "Pengaturan sistem dan preferensi tampilan",
+      "type": "object",
+      "properties": {
+        "adminPin": { "type": "string" },
+        "siteTitle": { "type": "string" },
+        "minQuizScoreToUnlock": { "type": "number" },
+        "themeConfig": { "type": "object" },
+        "updatedAt": { "type": "string" }
+      }
+    },
+    "appMeta": {
+      "title": "AppMeta",
+      "description": "Timestamp penanda versi konten materi dan kurikulum untuk optimasi kuota",
+      "type": "object",
+      "properties": {
+        "materialsUpdatedAt": { "type": "number" },
+        "categoriesUpdatedAt": { "type": "number" },
+        "subjectsUpdatedAt": { "type": "number" },
+        "settingsUpdatedAt": { "type": "number" },
+        "updatedAt": { "type": "string" }
+      }
+    },
+    "gameSession": {
+      "title": "GameSession",
+      "description": "Sesi permainan icebreaking multiplayer Bomb Passthrough di kelas",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "roomToken": { "type": "string" },
+        "teacherId": { "type": "string" },
+        "targetClass": { "type": "string" },
+        "status": { "type": "string" },
+        "minDurationSeconds": { "type": "number" },
+        "maxDurationSeconds": { "type": "number" },
+        "secretExplodeSeconds": { "type": "number" },
+        "elapsedSeconds": { "type": "number" },
+        "isTimerPaused": { "type": "boolean" },
+        "currentHolderId": { "type": "string" },
+        "currentHolderName": { "type": "string" },
+        "activeQuestion": { "type": "object" },
+        "players": { "type": "object" },
+        "playerCount": { "type": "number" },
+        "aliveCount": { "type": "number" },
+        "roundNumber": { "type": "number" },
+        "winnerId": { "type": "string" },
+        "winnerName": { "type": "string" },
+        "lastActionMessage": { "type": "string" },
+        "createdAt": { "type": "number" },
+        "updatedAt": { "type": "number" }
+      },
+      "required": ["roomToken", "targetClass", "status"]
+    },
+    "gamePlayer": {
+      "title": "GamePlayer",
+      "description": "Data peserta individual dalam subkoleksi sesi permainan icebreaking",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "studentId": { "type": "string" },
+        "name": { "type": "string" },
+        "displayName": { "type": "string" },
+        "nisn": { "type": "string" },
+        "kelas": { "type": "string" },
+        "status": { "type": "string" },
+        "isAlive": { "type": "boolean" },
+        "score": { "type": "number" },
+        "eliminatedReason": { "type": "string" },
+        "eliminatedAt": { "type": "number" },
+        "joinedAt": { "type": "number" },
+        "updatedAt": { "type": "number" }
+      },
+      "required": ["id", "name", "isAlive"]
+    },
+    "icebreakingPackage": {
+      "title": "IcebreakingPackage",
+      "description": "Paket soal dinamis untuk game icebreaking Bomb Passthrough",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "category": { "type": "string" },
+        "questions": { "type": "array" },
+        "totalQuestions": { "type": "number" },
+        "createdBy": { "type": "string" },
+        "isPublished": { "type": "boolean" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["title", "questions"]
+    }
+  },
+  "firestore": {
+    "/subjects/{subjectId}": {
+      "schema": "subject",
+      "description": "Daftar mata pelajaran kurikulum"
+    },
+    "/categories/{categoryId}": {
+      "schema": "category",
+      "description": "Daftar topik / bab materi ajar"
+    },
+    "/materials/{materialId}": {
+      "schema": "material",
+      "description": "Modul dan bahan ajar digital siswa"
+    },
+    "/teachers/{teacherId}": {
+      "schema": "teacher",
+      "description": "Daftar akun pengajar"
+    },
+    "/students/{studentId}": {
+      "schema": "student",
+      "description": "Daftar akun siswa"
+    },
+    "/student_progress/{studentId}": {
+      "schema": "studentProgress",
+      "description": "Riwayat dan capaian progres belajar siswa"
+    },
+    "/settings/{settingId}": {
+      "schema": "setting",
+      "description": "Konfigurasi administrasi dan tema aplikasi"
+    },
+    "/app_meta/{metaId}": {
+      "schema": "appMeta",
+      "description": "Metadata versi konten untuk efisiensi read kuota Spark"
+    },
+    "/game_sessions/{sessionId}": {
+      "schema": "gameSession",
+      "description": "Sesi permainan icebreaking multiplayer kelas"
+    },
+    "/game_sessions/{sessionId}/players/{playerId}": {
+      "schema": "gamePlayer",
+      "description": "Subkoleksi data peserta sesi permainan icebreaking"
+    },
+    "/icebreaking_packages/{packageId}": {
+      "schema": "icebreakingPackage",
+      "description": "Paket soal kustom icebreaking yang dapat dipilih guru"
+    }
+  }
+}

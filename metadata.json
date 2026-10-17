@@ -1,0 +1,8 @@
+{
+  "name": "Sistem Materi Pembelajaran v9 (game)",
+  "description": "Sistem pengelolaan dan penampil materi pembelajaran dari Google Drive dan Canva Presentation dengan integrasi Firestore.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
